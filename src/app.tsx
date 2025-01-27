@@ -13,8 +13,14 @@ export default function App() {
     try {
       setIsLoading(true);
       const content = window.location.hash;
-      if (!content) return;
-      const decrypted = decryptText(content.substring(1), import.meta.env.VITE_PASSWORD);
+      const toBeDecoded = content.substring(1);
+      if (!content || !toBeDecoded) return;
+      const decoded = decodeURIComponent(toBeDecoded);
+      if (validateUrl(decoded)) {
+        setRedirectUrl(decoded);
+        return;
+      }
+      const decrypted = decryptText(toBeDecoded, import.meta.env.VITE_PASSWORD);
       if (!validateUrl(decrypted)) return;
       setRedirectUrl(decrypted);
     } finally {
@@ -33,6 +39,11 @@ export default function App() {
   const handleSubmit = () => {
     if (!inputUrl() || !validateUrl(inputUrl())) return;
     setOutputUrl(window.location.origin + "#" + encryptText(inputUrl(), import.meta.env.VITE_PASSWORD));
+  };
+
+  const handleCreateRaw = () => {
+    if (!inputUrl() || !validateUrl(inputUrl())) return;
+    setOutputUrl(window.location.origin + "#" + encodeURIComponent(inputUrl()));
   };
 
   const handleCopy = async () => {
@@ -83,7 +94,10 @@ export default function App() {
               <input readOnly value={outputUrl()} onInput={(e) => setOutputUrl(e.currentTarget.value)} />
             </label>
             <div class="buttons">
-              <button>Create</button>
+              <button>Create hidden</button>
+              <button type="button" onClick={handleCreateRaw}>
+                Create raw
+              </button>
               <button disabled={isCopied() || !outputUrl()} type="button" onClick={handleCopy}>
                 Copy
               </button>
