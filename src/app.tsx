@@ -1,5 +1,5 @@
 import { validateUrl } from "@/utils/common.util.ts";
-import { decryptText, encryptText } from "@/utils/crypto.util.ts";
+import { compressText, decompressText } from "@/utils/crypto.util.ts";
 import { createSignal, Match, onCleanup, onMount, Show, Switch } from "solid-js";
 
 export default function App() {
@@ -20,7 +20,7 @@ export default function App() {
         setRedirectUrl(decoded);
         return;
       }
-      const decrypted = decryptText(toBeDecoded, import.meta.env.VITE_PASSWORD);
+      const decrypted = decompressText(toBeDecoded);
       if (!validateUrl(decrypted)) return;
       setRedirectUrl(decrypted);
     } finally {
@@ -38,7 +38,7 @@ export default function App() {
 
   const handleSubmit = () => {
     if (!inputUrl() || !validateUrl(inputUrl())) return;
-    setOutputUrl(window.location.origin + "#" + encryptText(inputUrl(), import.meta.env.VITE_PASSWORD));
+    setOutputUrl(window.location.origin + "#" + compressText(inputUrl()));
   };
 
   const handleCreateRaw = () => {
