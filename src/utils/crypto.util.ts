@@ -1,9 +1,9 @@
 import { base64urlnopad } from "@scure/base";
-import { compressToUint8Array, decompressFromUint8Array } from "lz-string";
+import Pako from "pako";
 
 export const compressText = (contentStr: string): string => {
   try {
-    return base64urlnopad.encode(compressToUint8Array(contentStr));
+    return base64urlnopad.encode(Pako.deflate(contentStr));
   } catch (e) {
     return "";
   }
@@ -11,7 +11,7 @@ export const compressText = (contentStr: string): string => {
 
 export const decompressText = (content64: string): string => {
   try {
-    return decompressFromUint8Array(base64urlnopad.decode(content64));
+    return Pako.inflate(base64urlnopad.decode(content64), { to: "string" });
   } catch (e) {
     return "";
   }
