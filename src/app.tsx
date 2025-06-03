@@ -1,6 +1,6 @@
 import { validateUrl } from "@/utils/common.util.ts";
 import { compressText, decompressText } from "@/utils/crypto.util.ts";
-import { createSignal, Match, onCleanup, onMount, Show, Switch } from "solid-js";
+import { createSignal, Match, onCleanup, onMount, Switch } from "solid-js";
 
 export default function App() {
   const [inputUrl, setInputUrl] = createSignal<string>("");
@@ -87,7 +87,7 @@ export default function App() {
           >
             <label>
               Input URL
-              <input value={inputUrl()} onInput={(e) => setInputUrl(e.currentTarget.value)} />
+              <input class="input" value={inputUrl()} onInput={(e) => setInputUrl(e.currentTarget.value)} />
             </label>
             <label>
               Masked URL
@@ -99,11 +99,15 @@ export default function App() {
                 Create raw
               </button>
               <button disabled={isCopied() || !outputUrl()} type="button" onClick={handleCopy}>
-                Copy
+                <Switch>
+                  <Match when={isCopied()}>
+                    <span>Copied</span>
+                  </Match>
+                  <Match when={!isCopied()}>
+                    <span>Copy</span>
+                  </Match>
+                </Switch>
               </button>
-              <Show when={isCopied()}>
-                <span>Copied</span>
-              </Show>
             </div>
           </form>
         </Match>
